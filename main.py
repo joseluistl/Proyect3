@@ -85,10 +85,11 @@ class SentClass:
 
         [25 points]
         '''
-        a = pd.DataFrame().assign(words=[y for z in self.data.words for y in z]).assign(times = lambda df: 1).groupby(["words"]).count()
+        a = pd.DataFrame().assign(words= np.concatenate(self.data["words"])).assign(times = lambda df: 1).groupby(["words"]).count()
         self.voc = pd.Series(a.query("times>@min_count").index).sort_values()
         # Filter words only those in voc.
-        self.data.words = self.data["words"].map(lambda x: [i for i in x if i in self.voc.values])
+        setW = set(self.voc.values)
+        self.data.words = self.data["words"].map(lambda x: list(set(x).intersection(setW)))
 
     def gen_voc_features(self, feature_col):
         '''
@@ -152,6 +153,7 @@ class SentClass:
             cad = "f"+str(i)
             self.feature_voc[cad]["pos"] = pos_voc
             self.feature_voc[cad]["neg"] = neg_voc
+
 
 
     def text_to_features(self, text):
@@ -226,6 +228,6 @@ if __name__ == '__main__':
     sc = SentClass(os.path.join(home_dir, 'data'), sw)
     sc.read_data('sentiment')
     sc.clean_text('review')
-    #sc.gen_voc()
-    #sc.get_feature_voc()
-    #sc.train_model('review', 'clean_sentiment')
+    sc.gen_voc()
+    sc.get_feature_voc()
+    sc.train_model('review', 'clean_sentiment')
