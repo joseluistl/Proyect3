@@ -52,6 +52,7 @@ def prefix_neg(words):
         proc_words.append(word)
         if word in ('.', '?', '!'):
             after_neg = False
+            continue
         if word in ('not', 'no', 'nor'):
             after_neg = True
     return proc_words
@@ -130,5 +131,4 @@ def proc_text(text, sw):
 
     # Clean words that are not in sw
     return [i for i in text.split() if i not in sw]
-
 
